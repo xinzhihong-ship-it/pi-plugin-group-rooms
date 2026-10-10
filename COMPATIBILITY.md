@@ -1,191 +1,132 @@
-# Standalone plugin compatibility
+# 独立插件兼容性说明
 
-Delivery is an independent plugin using public SDK interfaces. The Extensions
-switch controls the Group Rooms main navigation category, the main management
-page and the native `@` autocomplete. Members remain in the existing WorkPanel.
+本插件是一个**独立插件**，只使用宿主公开 SDK 接口交付。「扩展」开关控制群聊主导航分类、
+主管理页与原生 `@` 补全；成员仍在既有的工作面板里。
 
-## Stock PI-Desktop 0.17.0
+## 正式版 PI-Desktop 0.17.0
 
-The installed version supplies desktop operations, model catalogs, WorkPanel
-views and additive composer slots. It lacks the managed native submission and
-transcript APIs, private plugin secrets, execution-event subscriptions, managed
-live presentation and main-shell page/navigation APIs required here. It cannot
-run this implementation through its verified public SDK.
+正式版提供桌面操作、模型目录、工作面板视图与可叠加的输入框插槽，但**缺少**本实现所需的
+托管原生提交与转写 API、插件私有密钥、执行事件订阅、托管实时呈现，以及主壳页面/导航 API。
+它**无法**通过其已验证的公开 SDK 运行本实现。
 
-The stock PluginCheck also rejects `session.manage.own` and `secrets.store`.
-A validated `.piplug` has not been produced. Do not remove required permissions
-or substitute private IPC calls to make this checker pass.
+正式版的 PluginCheck 还会拒绝 `session.manage.own` 与 `secrets.store`。
+因此**未产出**通过校验的 `.piplug`。**不要**为了让这个检查器通过而删除必需权限
+或改用私有 IPC 调用。
 
-## Pending host implementation
+## 待合入的宿主实现
 
-The isolated host worktree implements these general plugin capabilities:
+隔离的宿主工作树实现了以下**通用**插件能力：
 
-- Managed native transcript ownership, submit receipts and idempotent append.
-- A narrow, non-dangerous managed-session model binding
-  (`session.setManagedModel`) that writes only the model columns and can never
-  touch `mode`/`permission_mode`/transcript — unlike `session/configure`, which
-  is dangerous and re-prompts natively on every call.
-- Managed-session attachments: the host content-addresses a composer attachment
-  and hands the owning plugin a descriptor, plus owner-checked
-  `readManagedAttachment` / `beginManagedAttachment` / `writeManagedAttachment` /
-  `commitManagedAttachment` so a plugin can move the bytes to another machine and
-  land them in its own content-addressed store. The managed-send path reads the
-  session's project path with `session.get {id}` and no read window, because
-  host-core refuses a zero-length window (`messageLimit: 0` → "non-negative
-  messageBefore and positive messageLimit"), which failed every managed send.
-- Encrypted plugin-private secret storage.
-- Per-session agent streams and durable terminal receipts.
-- Owner-checked transient message/tool presentation.
-- Native session context and singleton WorkPanel view actions.
-- Lifecycle-owned `navigationSection` and `mainPage` slots with gesture-bound
-  `shell.openPage`; disabling removes slots and exits an active plugin page.
+- 托管原生转写的所有权、提交回执与幂等追加。
+- 一条**窄且非危险**的托管会话模型绑定（`session.setManagedModel`），只写模型列，
+  永不触碰 `mode` / `permission_mode` / 转写 —— 不同于 `session/configure`
+  （危险操作，每次调用都会重新弹原生确认）。
+- 托管会话附件：宿主对输入框附件做内容寻址并把描述符交给所属插件，
+  另有带所有者校验的 `readManagedAttachment` / `beginManagedAttachment` /
+  `writeManagedAttachment` / `commitManagedAttachment`，使插件能把字节搬到另一台机器
+  并落进自己的内容寻址存储。托管发送路径用 `session.get {id}` 读取会话项目路径且不带读窗口，
+  因为 host-core 拒绝零长度窗口（`messageLimit: 0` →
+  "non-negative messageBefore and positive messageLimit"），这曾让每次托管发送都失败。
+- 加密的插件私有密钥存储。
+- 按会话的 agent 事件流与**持久**终态回执。
+- 带所有者校验的**瞬时**消息/工具呈现。
+- 原生会话上下文与单例工作面板视图动作。
+- 生命周期持有的 `navigationSection` 与 `mainPage` 插槽，以及**手势绑定**的 `shell.openPage`；
+  禁用时移除插槽并退出正在打开的插件页面。
 
-The manifest requires `>=0.18.0-beta.2`, which **is** the installed
-application: it already carries `pi.ui.openLayer`, the `@scope`-wrapped style
-injection, `workPanel.openView` and the `#pi-plugin-layers` stack. This round
-therefore needs no host change and ships as a plugin-only `.piplug`.
+manifest 要求 `>=0.18.0-beta.2`，而这**正是**已安装的应用：它已带有 `pi.ui.openLayer`、
+`@scope` 包裹的样式注入、`workPanel.openView` 与 `#pi-plugin-layers` 层栈。
+因此本轮**不需要**改宿主，作为**纯插件 `.piplug`** 交付。
 
-## Verified scope
+## 已验证范围
 
-The actual plugin passed an isolated macOS Desktop main-interface acceptance
-run against that pending checkout. It verified Sessions / Projects / Group
-Rooms order, Create/Join form navigation, real backend room creation, native
-chat opening and broadcast, singleton Members tab, no ordinary session-row
-duplication, disable removal, and room/history preservation across re-enable
-and application restart. Listener activation remained explicit. Zero model
-requests were made. Only the isolated copied manifest used a beta.2 engine
-override for the test checkout.
+真实插件在该待合入检出上通过了隔离的 macOS 桌面主界面验收运行，验证了：
+会话 / 项目 / 群聊的顺序、创建/加入表单导航、真实后端建房、原生聊天打开与广播、
+单例成员标签页、不产生普通会话行重复、禁用时移除、以及重新启用与应用重启后房间/历史的保留。
+监听激活保持**显式**。**零**模型请求。只有隔离用的副本 manifest 为测试检出把引擎要求
+临时降到 beta.2；交付 manifest 未被降低。
 
-Backend, shared-helper and main UI tests passed 58/58
-(backend 45, shared 4, UI 5, plus four harnesses that drive two real room
-services over loopback). The loopback harnesses: one sends an attachment from a
-machine holding the bytes to one that does not and asserts the receiver fetched
-them and ran with the attachment; one drops a member's connection mid-run and
-asserts its stale `unknown` record is retired when it reconnects; one leaves and
-rejoins, asserting the re-flushed window is appended once and the member list
-does not grow; and one rejoins *after a hard drop* (no clean leave) and asserts
-the offline ghost row is retired rather than duplicated. The last three fail
-against the previous bundle; the remember-identity/address,
-delete-then-rejoin,
-pending-approval-prompt and members-panel auto-open paths are also covered by a
-visible-window run on the packaged app (26 stages PASS, two machines), whose
-menu and dialog assertions read rendered geometry rather than DOM presence. That
-run caught three defects the unit tests could not — a double-firing one-shot
-that left the members view unrendered, a menu layout effect that never measured
-its portal, and a one-shot armed on the resolved room rather than the active
-session, so the user's first press on arrival spent it before the plugin could
-know the room — all now fixed. The
-portable core's room tests passed 70/70; host plugin, queue,
-scheduled-workspace, tray and slot-layout regressions passed 98/98. Desktop
-type checking and production build passed. Two isolated instances on one Mac
-passed network execution with a local fixture provider: two durable completed
-runs from one `@all` message, per-computer project paths, `high` thinking,
-unique tool IDs, durable abort on disable and no replay on re-enable. Against
-the exact host commit `5d7fb6f36`, the main interface run `1791527106424` and
-network run `1791527124115` both passed. The pending checkout's `pi-plugin
-check` accepts this plugin. Physical multi-computer, cross-OS and real remote
-permission-card acceptance remain outstanding.
+后端、共享助手与主界面测试通过 **58/58**（后端 45、共享 4、界面 5，另加四个在回环上
+驱动两个真实房间服务的夹具）。回环夹具覆盖：一台机器把附件发给不持有字节的另一台，
+断言接收方取到字节并带附件运行；一台在运行中途掉线，断言其陈旧 `unknown` 记录在重连时被退役；
+一台离开后重新加入，断言重新冲刷的窗口只追加一次且成员列表不增长；以及**硬掉线后**重新加入
+（没有干净离开），断言离线幽灵行被退役而不是重复。后三项在上一版包上会失败。
+「记住名字/地址」「删除后重加入」「待批准提示」「成员面板自动打开」这几条路径，
+另有一轮**可见窗口**运行在打包应用上覆盖（两机、26 阶段 PASS），其菜单与对话框断言读取的是
+**渲染几何**而非 DOM 是否存在。该轮运行抓出了三个单测抓不到的缺陷 —— 一个重复触发的
+一次性监听导致成员视图未渲染、一个菜单布局副作用从未测量其挂载层、以及一次性监听挂在
+「已解析的房间」而非「当前激活会话」上，导致用户到达后的第一次按键在插件得知房间前就被消耗 ——
+**均已修复**。可移植核心的房间测试通过 70/70；宿主插件、队列、计划工作区、托盘与插槽布局
+回归通过 98/98。桌面类型检查与生产构建通过。单机两个隔离实例用本地 fixture provider 通过
+网络执行：一条 `@all` 消息产生两个持久 completed 运行、各自的项目路径、`high` 思考等级、
+唯一工具 ID、禁用时持久 `aborted` 结算、重新启用后不重放。针对精确的宿主提交 `5d7fb6f36`，
+主界面运行 `1791527106424` 与网络运行 `1791527124115` 均通过。待合入检出的
+`pi-plugin check` 接受本插件。**物理多机、跨操作系统与真实远端权限卡片接受仍待完成。**
 
-A visible-window run reproduced a main-page layout defect: the page collapsed
-into a padded sliver and its container query fired at the narrowest breakpoint,
-and the navigation section sized to its content instead of spanning the
-sidebar. This was a general host slot gap, fixed in host commit `e454405b9`
-(`mainPage` and `navigationSection` now take their host box) and defensively in
-the plugin's `.gr-page` / `.gr-nav` rules. The same run then completed Create,
-Join, assistant approval, per-member model and thinking selection and an `@all`
-message that produced one final message per computer from its own local
-`README.md`.
+一轮可见窗口运行复现了主页面布局缺陷：页面塌缩成带内边距的细条，其容器查询在最窄断点触发，
+且导航区按内容宽度而非撑满侧边栏。这是**通用**的宿主插槽缺口，已在宿主提交 `e454405b9`
+修复（`mainPage` 与 `navigationSection` 现在取宿主给的盒子），并在本插件的
+`.gr-page` / `.gr-nav` 规则里做了防御性修复。同一轮运行随后完成了创建、加入、助手批准、
+按成员选择模型与思考等级，以及一条 `@all` 消息，使每台电脑各自基于本机 `README.md`
+产出一条最终消息。
 
-Known behavior to note: an assistant with no saved configuration runs on its own
-computer's default model, so `@all` no longer refuses a send over a missing
-choice and no `INTERNAL` failed turn appears. The earlier refusal
-(`Select a model for every available @all agent first`) is gone. An explicitly
-saved configuration is still strict: an unknown model key, an unsupported
-thinking level, or a saved model no longer in the catalog is refused.
+需要留意的已知行为：**未保存配置**的助手用**它自己电脑的默认模型**运行，所以 `@all`
+不再因「没选模型」而拒发，也不再出现 `INTERNAL` 失败轮次；早先的拒绝
+（`Select a model for every available @all agent first`）已消失。**显式保存过的配置仍然严格**：
+未知模型键、不支持的思考等级、或已不在目录中的已保存模型，一律拒绝。
 
-Creating a room approves **only the host's own member row**: the creating
-machine is the host, so a self-approval click was removed. Every other member,
-including one that joins and auto-requests agent access, still lands as
-`pending` until the host approves. An agent reply states the model and thinking
-level it ran on: the admitted run's choice rides in the managed author byline
-(`🔵 Alice · Claude Sonnet · high`), since the host transcript has no model column
-of its own. The name carries a colored dot chosen by a stable hash of the name,
-so a member is the same color on every computer; the palette is the seven
-chromatic circles, black and white excluded because a black disc on a dark
-transcript reads as an uncolored byline. The composer carries no plugin
-controls — the native `@` autocomplete is the only addition, and who runs is
-decided by the `@mention` the user types: a message with no `@` runs on this
-computer, and one that names somebody else runs only them.
+创建房间**只批准房主自己的成员行**：建房的那台机器就是房主，所以「批准自己」那一次点击被移除。
+其他每个成员（包括加入后自动申请 agent 权限的）在房主批准前仍是 `pending`。
+agent 回复会标明它运行的模型与思考等级：被准入的那次运行的选择搭载在托管作者署名里
+（`🔵 Alice · Claude Sonnet · high`），因为宿主转写本身没有模型列。名字前的圆点由名字的
+稳定哈希决定颜色，因此同一成员在每台电脑上同色；调色板是七种彩色圆点，黑白被排除，
+因为深色转写上的黑色圆点看起来像「没上色」。输入框不带任何插件控件 —— 唯一的增加是
+原生 `@` 补全，谁运行由你输入的 `@` 决定：不带 `@` 的消息在本机运行，点名别人的只运行那个人。
 
-Worker sessions are created and prompted through `desktop.control`
-operations. `session/configure` is a dangerous operation that always shows the
-host's native confirmation, with no persistence between calls, so the plugin
-**never** calls it: a worker runs at this machine's own configured default
-permission mode. Calling it on every run to narrow the mode is what turned one
-room message into one native consent dialog. For the same reason a room
-transcript binds **no host project** — it is a managed chat session that never
-runs an agent, and creating a project for it made a project appear in the user's
-sidebar that they never asked for. The member's folder travels with each worker
-request instead, and `session/create` is what gives that worker its workspace.
+worker 会话通过 `desktop.control` 操作创建与提示。`session/configure` 是危险操作，
+总会显示宿主原生确认且调用间**不持久化**，所以插件**从不**调用它：
+worker 以**本机自己配置的默认权限模式**运行。为了收窄模式而在每次运行时调用它，
+正是把一条房间消息变成一次原生同意对话框的原因。同理，房间转写**不绑定**任何宿主项目 ——
+它是一个永不运行 agent 的托管聊天会话，而为它建项目会让用户侧边栏冒出一个他从没要过的项目。
+成员的目录改随每次 worker 请求传递，由 `session/create` 给该 worker 其工作区。
 
-## Plugin-side additions
+## 插件侧新增
 
-This round adds no host API. The plugin remembers its own member name and
-reachable address in its private settings (a new top-level `local` field, with a
-migration that leaves an older document intact), probes its own interfaces with
-`node:os` for a first non-loopback IPv4 to offer, and deletes a room with the
-already-available `session/open` and `session/delete` desktop operations. The
-room-row menu is a portal into a **`pi.ui.openLayer()` layer**, built inside the
-plugin, because the sidebar clips its rows and the host's own context-menu
-component is not exposed to plugins — and because plugin CSS is wrapped in
-`@scope ([data-pi-plugin="…"])`, so a portal to `document.body` would arrive
-with no styling at all. The layer is zero-sized and fixed, so the menu still
-positions against the row's viewport rect. The members panel is opened through
-`workPanel.openView` from the user's own gesture only. Generating an invitation
-copies it immediately, through the renderer's clipboard API with a
-detached-field command copy as fallback, so the row-menu form works with the
-management page unmounted; a refusal is reported as a refusal, and the report is
-drawn in the sidebar as well as on the management page, since that is where the
-row menu is used. Deleting a room
-dispatches `session/delete` without awaiting it, because the host's dangerous
-confirmation dialog can outlast the 2s `plugin.call` relay timeout, and five
-consecutive poll timeouts trip the relay breaker and make the plugin read as
-「连续出错」 for 30s. The approval dialog restates the opaque
-`--ds-bg-elevated-opaque` surface and styles its own buttons, since the host's
-`.p-dialog` shell is translucent and styles none. Five build-time core patches
-add `forgetDeparted`, `forgetRunStatus`, a blob-read fix, a reconnect
-retirement and a ghost-member retirement on join, so a deleted session is not
-handed back by a later rejoin, a run this machine's own worker settled as
-`unknown` does not refuse every later message to that member forever, a blob
-this machine does not hold is *fetched* rather than treated as a fatal read
-error, and a member whose connection dropped is not left permanently refused
-after coming back. A machine only leaves cleanly while its link is up: if a
-guest's app was relaunched and its stored room was lost (reinstall, cleared
-data), it rejoins with a fresh credential while its old row is still on the host,
-offline — and the join used to add a second row for the same name that nothing
-ever retired, so the members list grew one ghost per rejoin, on both machines,
-because a guest's view *is* the host's snapshot. A join now retires every
-offline row carrying the joining name (a name is one computer's identity here)
-together with its credential, and marks its still-`running` runs `unknown`; a
-clean rejoin is matched by its credential as before and never re-joins. The host reports a missing blob by
-throwing `NOT_FOUND`, never with a falsy value; the core's two blob paths assumed
-the falsy shape, so a picture raised on a room ran only on the machine that held
-the bytes and failed — with a stuck member and 「助手没能完成这次回复」 — on
-every other one, and the relay refused instead of forwarding. A run the host
-recorded `unknown` for a *remote* member had no release path at all (the plugin's
-own release covers only this machine's row), so a peer that merely went away and
-came back stayed blocked; the host now retires that member's leftover
-`running`/`unknown` records on `resume`, because reconnecting is the one proof
-the old turn is dead. The bundled portable service is rebuilt from the unchanged
-candidate core.
+本轮**不新增**宿主 API。插件在其私有设置里记住自己的成员名称与可连接地址
+（新增顶层 `local` 字段，并带一个不动旧文档的迁移），用 `node:os` 探测本机网卡以给出
+第一个非回环 IPv4，并用**已可用**的 `session/open` 与 `session/delete` 桌面操作删除房间。
+房间行菜单是挂进 **`pi.ui.openLayer()` 层**的浮层，在插件内部构建 —— 因为侧边栏会裁剪其行，
+宿主自己的上下文菜单组件未对插件暴露 —— 也因为插件 CSS 被包在
+`@scope ([data-pi-plugin="…"])` 里，挂到 `document.body` 会完全不带样式。
+该层是零尺寸且 `fixed` 的，所以菜单仍按行的视口矩形定位。成员面板**仅**由用户自己的手势
+经 `workPanel.openView` 打开。生成邀请时**立即复制**，经渲染端剪贴板 API，
+并以「分离字段命令复制」作兜底，因此行菜单表单在管理页未挂载时也能用；
+复制被拒就如实报错，且提示同时画在侧边栏与管理页上，因为行菜单正是在侧边栏使用的。
+删除房间时**不等待** `session/delete`，因为宿主的危险确认框可能超过 `plugin.call` 中继的 2 秒超时，
+而连续五次轮询超时会触发中继熔断，使插件在 30 秒内读作「连续出错」。
+批准对话框重述了不透明的 `--ds-bg-elevated-opaque` 表面并自绘按钮，
+因为宿主的 `.p-dialog` 外壳是半透明的且不给按钮上样式。五个构建期核心补丁增加了
+`forgetDeparted`、`forgetRunStatus`、一个 blob 读取修复、一次重连退役，以及加入时的幽灵成员退役，
+使得：被删除的会话不会被后续重加入交还；本机 worker 结算为 `unknown` 的运行不会永久拒绝
+后续发给该成员的消息；本机不持有的 blob 会被**取回**而不是当作致命读错误；
+连接掉过的成员不会在回来后仍被永久拒绝。一台机器只在其链路正常时才干净离开：
+如果客机应用被重启且其存储的房间丢失（重装、清数据），它会带着新凭据重新加入，
+而它在房主那边的旧行仍离线存在 —— 过去的加入会为同一名字再加一行且永不退役，
+于是每次重加入都多一个幽灵行（两台机器上都是，因为客机的视图**就是**房主的快照）。
+现在加入时会退役所有携带该名字的离线行（在这里，名字就是一台电脑的身份）连同其凭据，
+并把其仍 `running` 的运行标记为 `unknown`；干净的重加入按凭据匹配，和以前一样，绝不重复加入。
+宿主对不持有的 blob 以**抛出** `NOT_FOUND` 报告，绝不用假值返回；核心的两条 blob 路径
+假设了假值形状，导致房间里的一张图片只在持有字节的那台机器上运行、在其他每台都失败
+（成员卡住并报「助手没能完成这次回复」），且中继拒绝而不是转发。一条被宿主记为 `unknown`
+的**远端**成员的运行原本**完全没有**释放路径（插件自己的释放只覆盖本机的行），
+所以只是离开又回来的对端会一直被阻塞；现在宿主在 `resume` 时退役该成员遗留的
+`running` / `unknown` 记录，因为重连正是「上一轮已死」的唯一证明。
+打包的可移植服务从**未改动**的候选核心重建。
 
-## Portable network build
+## 可移植网络构建
 
-`node build.mjs <candidate-worktree>` bundles the preserved room network core
-and WebSocket dependency into `lib/network.cjs`, with strict build-time adapter
-patches. No candidate-checkout paths are needed by the bundle at runtime.
-Backend activation reads storage and registers event handlers; it never prompts,
-reconnects or binds for a machine that hosts nothing. A saved host room does
-re-arm its listener, because hosting a room is what makes the machine reachable;
-the port and bind address are remembered so invitations already shared keep
-working.
+`node build.mjs <candidate-worktree>` 把保留的房间网络核心与 WebSocket 依赖打包进
+`lib/network.cjs`，带严格的构建期适配补丁。该 bundle 在运行时**不需要**任何候选检出路径。
+后端激活只读取存储并注册事件处理器；对不承载任何房间的机器，它**从不**提示、重连或绑定。
+已保存的宿主房间**会**重新武装其监听，因为承载房间正是让这台机器可被连接的原因；
+端口与绑定地址会被记住，以便已分享出去的邀请继续有效。
