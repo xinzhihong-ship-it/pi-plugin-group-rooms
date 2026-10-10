@@ -1,0 +1,12 @@
+# Dependencies (symlinks into other checkouts here; never commit them)
+node_modules/
+
+# Packed artifacts (built by `pi-plugin pack`; attached to a release instead)
+dist/
+*.piplug
+
+# Throwaway development probes (not part of the suite)
+test/probe-*.cjs
+
+# OS noise
+.DS_Store

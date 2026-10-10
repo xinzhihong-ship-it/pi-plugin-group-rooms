@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "local.group-rooms",
+  "name": "群组房间",
+  "version": "0.1.0",
+  "description": "创建或加入共享房间，在原生会话中聊天，并在工作面板中管理成员。",
+  "i18n": {
+    "en": { "name": "Group Rooms", "description": "Create or join shared rooms, chat in native sessions, and manage members in the work panel." },
+    "zh-CN": { "name": "群组房间", "description": "创建或加入共享房间，在原生会话中聊天，并在工作面板中管理成员。" }
+  },
+  "main": "main.js",
+  "renderer": "renderer/extension.mjs",
+  "rendererActions": ["plugin.call", "session.readContext", "shell.openPage", "workPanel.openView"],
+  "rendererCallMethods": [
+    "group-rooms.list", "group-rooms.snapshot", "group-rooms.context", "group-rooms.appearance",
+    "group-rooms.selectDirectory",
+    "group-rooms.create", "group-rooms.join", "group-rooms.invite", "group-rooms.open",
+    "group-rooms.rename", "group-rooms.leave", "group-rooms.remove", "group-rooms.requestAgent", "group-rooms.approve",
+    "group-rooms.revoke", "group-rooms.configure", "group-rooms.cancel"
+  ],
+  "contributes": {
+    "views": [{ "id": "members", "title": { "en": "Room members", "zh-CN": "房间成员" }, "icon": "chat", "entry": "views/members.html", "order": 50 }],
+    "sessionSources": [{ "id": "group-rooms", "label": { "en": "Group Rooms", "zh-CN": "群聊" } }]
+  },
+  "permissions": [
+    "desktop.control", "session.manage.own", "session.read.own", "secrets.store",
+    "ui.view", "renderer.extension", "background.service", "fs.read",
+    "models.list", "net.anyHost"
+  ],
+  "fs": { "read": { "root": "userSelected", "scope": [] } },
+  "engines": { "piDesktop": ">=0.18.0-beta.2" },
+  "activationEvents": ["onStartup"]
+}

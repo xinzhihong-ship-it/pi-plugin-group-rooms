@@ -1,0 +1,13 @@
+# Group Rooms UI contract
+
+Mission: Group Rooms is the third category beside Sessions and Projects in the MAIN PI-Desktop sidebar. Its separate Create and Join buttons open direct React forms and room management in the MAIN content pane. The existing WorkPanel contains members; the native composer owns messages and mentions.
+
+Use the host appearance and locale. Chinese is the fallback; English follows the host locale. MAIN UI inherits host sidebar classes and semantic tokens: --ds-bg-primary/secondary/hover/active, --ds-text-primary/secondary/muted, --ds-border-default/strong, --ds-focus, --ds-danger and --radius-sm/md/lg. Preserve the host typography, system 13px body, 14px section headings and 20px page heading. Spacing uses 4/8/12/16/24px. Hover and press are immediate; newly loaded room lists enter over 180ms with a spring-like curve and a bounded 24ms stagger. Reduced motion removes entrances.
+
+Do: use real buttons, labels, focus rings, status announcements, stable minmax grid tracks, wrapping names and paths, explicit creation/joining actions, a read-only receiving status, read-only snapshot refreshes, and stale-request guards. Keep one member per machine and models attached to that member. Display pending/rejected/unavailable members; they remain human participants. Keep model configuration separate from next-send target selection.
+
+Don't: render a transcript or a message input, execute when a member/model is selected, add a listening switch (creating a room is the consent to receive), start a listener on load for a machine that hosts nothing, download a NAS project, bypass host confirmation, use private host state or manipulate the host DOM, or present fixture data as connected data.
+
+Assumptions: the public navigationSection and mainPage slots receive empty props; each extension lifetime owns one shared store and one rooms page. shell.openPage({pageId:'rooms'}) runs synchronously inside the user gesture after local requested mode is saved. The host owns plugin:local.group-rooms/rooms routing and returns to native chat when that page is unregistered. Backend owns managed sessions, identity, approval, confirmed worker operations and mention execution. WorkPanel uses onPanelInvoke and a plugin-owned context mirror; it never accesses host internals. Directory changes require leaving and rejoining. renderer/index.html remains an unregistered fallback asset; MAIN UI never opens a panel or iframe.
+
+Compatibility: >=0.18.0-beta.3 is a tentative target for pending public host SDK/slots additions, not a claim of released support. Stock 0.17 is unsupported. renderer/preview.html explicitly labels its host/backend fixtures as demo data and is never imported by the extension.
