@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "local.group-rooms",
+  "id": "io.github.xinzhihong.group-rooms",
   "name": "群组房间",
   "version": "0.1.0",
   "description": "创建或加入共享房间，在原生会话中聊天，并在工作面板中管理成员。",

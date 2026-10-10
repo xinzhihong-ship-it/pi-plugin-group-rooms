@@ -39,7 +39,7 @@ async function mutate(name, args) {
   notice(t('正在保存…', 'Saving…'));
   try {
     const checked = await call('context');
-    if (checked?.sessionId !== expected || checked?.managedByPlugin !== 'local.group-rooms') throw Object.assign(new Error('Session changed'), { code: 'STALE' });
+    if (checked?.sessionId !== expected || checked?.managedByPlugin !== 'io.github.xinzhihong.group-rooms') throw Object.assign(new Error('Session changed'), { code: 'STALE' });
     await call(name, { roomId, ...args });
     const after = await call('context');
     if (after?.sessionId !== expected) { currentContext = after; clear(); return; }

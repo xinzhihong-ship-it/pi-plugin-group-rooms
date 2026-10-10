@@ -343,7 +343,7 @@ test("main lifecycle exposes only bridge and native submit hooks, with inert loa
     await entry.onLoad(); assert.equal(f.shared.secrets.size, 0); assert.equal(f.calls.length, 0);
     assert.deepEqual(await entry.onPanelInvoke("group-rooms.models", {}), [{ key: model.key, providerId: model.providerId, modelId: model.modelId, label: model.label, thinkingLevels: model.thinkingLevels, contextWindow: 1 }]);
     assert.equal(await entry.onPanelInvoke("group-rooms.context", {}), null);
-    const context = { sessionId: randomUUID(), managedByPlugin: "local.group-rooms" };
+    const context = { sessionId: randomUUID(), managedByPlugin: "io.github.xinzhihong.group-rooms" };
     assert.deepEqual(await entry.onRendererCall("group-rooms.context", { context }), context);
     assert.deepEqual(await entry.onPanelInvoke("group-rooms.context", {}), context);
     await assert.rejects(entry.onPanelInvoke("group-rooms.context", { context: null, source: "renderer" }), { code: "FORBIDDEN" });

@@ -1,4 +1,4 @@
-export const PLUGIN_ID = 'local.group-rooms';
+export const PLUGIN_ID = 'io.github.xinzhihong.group-rooms';
 export const method = name => `group-rooms.${name}`;
 export const isChinese = locale => !locale || /^zh/i.test(locale);
 export const text = (locale, zh, en) => isChinese(locale) ? zh : en;

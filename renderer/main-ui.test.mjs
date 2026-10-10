@@ -38,7 +38,7 @@ test('main slots: gesture navigation, management payloads, errors, native room o
       // menu portalled into it is the one place the plugin's CSS applies.
       openLayer() {
         const element = document.createElement('div');
-        element.setAttribute('data-pi-plugin', 'local.group-rooms');
+        element.setAttribute('data-pi-plugin', 'io.github.xinzhihong.group-rooms');
         element.setAttribute('data-pi-layer', '');
         document.body.appendChild(element);
         return { element, close() { element.remove(); } };
@@ -123,7 +123,7 @@ test('main slots: gesture navigation, management payloads, errors, native room o
   // The host wraps this plugin's every style rule in
   // `@scope ([data-pi-plugin="<id>"])`, so the layer must carry exactly the id
   // the manifest declares, or the menu would be styled by nothing.
-  assert.equal(layer.getAttribute('data-pi-plugin'), 'local.group-rooms', 'the layer carries the plugin id the host scopes styles to');
+  assert.equal(layer.getAttribute('data-pi-plugin'), 'io.github.xinzhihong.group-rooms', 'the layer carries the plugin id the host scopes styles to');
   assert.equal(layer.hidden, false, 'the host is not suspending the layer');
   assert.equal(layer.hasAttribute('inert'), false, 'the layer is not inert');
   assert.equal(document.body.contains(layer), true, 'the layer is mounted in the document');
@@ -251,7 +251,7 @@ test('a pending agent request raises a host dialog, and entering a room opens it
       injectStyle() { return () => {}; },
       openLayer() {
         const element = document.createElement('div');
-        element.setAttribute('data-pi-plugin', 'local.group-rooms'); element.setAttribute('data-pi-layer', '');
+        element.setAttribute('data-pi-plugin', 'io.github.xinzhihong.group-rooms'); element.setAttribute('data-pi-layer', '');
         document.body.appendChild(element);
         return { element, close() { element.remove(); } };
       },

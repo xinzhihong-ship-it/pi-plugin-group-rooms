@@ -111,7 +111,7 @@ export function registerMainUI(pi, getNativeState) {
     });
   }
   // A plugin's injected CSS is scoped to its own slot mounts (`@scope
-  // ([data-pi-plugin="local.group-rooms"])`), so a menu portalled to
+  // ([data-pi-plugin="io.github.xinzhihong.group-rooms"])`), so a menu portalled to
   // `document.body` arrives with none of the styles below and is invisible.
   // `pi.ui.openLayer` hands back a zero-size, viewport-fixed element that
   // carries this plugin's style scope and stacks above the app's own dialogs,
