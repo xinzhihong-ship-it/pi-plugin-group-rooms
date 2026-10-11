@@ -230,6 +230,12 @@ node build.mjs <candidate-worktree>
 
 ## 九、变更日志
 
+### 0.1.1
+
+- 补充 **MIT 许可证**：新增仓库根目录 `LICENSE`，并在 `manifest.json` 声明
+  `"license": "MIT"`（修复插件中心 SRC005：源码仓库缺少插件自身的许可证文件）。
+- `manifest.json` 增补 `author`、`homepage`。
+
 ### 0.1.0
 
 - 首个版本：群聊分类、创建/加入、原生会话聊天、多机成员、工作面板成员管理。

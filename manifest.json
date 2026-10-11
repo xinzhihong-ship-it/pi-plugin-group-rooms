@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.xinzhihong.group-rooms",
   "name": "群组房间",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "创建或加入共享房间，在原生会话中聊天，并在工作面板中管理成员。",
   "author": "xinzhihong-ship-it",
   "homepage": "https://github.com/xinzhihong-ship-it/pi-plugin-group-rooms",
