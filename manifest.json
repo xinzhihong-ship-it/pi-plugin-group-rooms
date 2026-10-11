@@ -4,6 +4,9 @@
   "name": "群组房间",
   "version": "0.1.0",
   "description": "创建或加入共享房间，在原生会话中聊天，并在工作面板中管理成员。",
+  "author": "xinzhihong-ship-it",
+  "homepage": "https://github.com/xinzhihong-ship-it/pi-plugin-group-rooms",
+  "license": "MIT",
   "i18n": {
     "en": { "name": "Group Rooms", "description": "Create or join shared rooms, chat in native sessions, and manage members in the work panel." },
     "zh-CN": { "name": "群组房间", "description": "创建或加入共享房间，在原生会话中聊天，并在工作面板中管理成员。" }

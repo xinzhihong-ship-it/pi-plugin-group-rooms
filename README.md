@@ -243,4 +243,7 @@ node build.mjs <candidate-worktree>
 
 ## 十、许可
 
-插件本体与打包的 `ws` 依赖许可见 `lib/WS-LICENSE.txt` 及仓库内许可文件。
+本插件以 **MIT 许可证**发布，全文见仓库根目录 [`LICENSE`](./LICENSE)。
+
+打包进 `lib/network.cjs` 的 `ws` 库使用其**自己的**许可证（MIT），全文见
+[`lib/WS-LICENSE.txt`](./lib/WS-LICENSE.txt)；依赖库的许可证**不是**本插件的许可证。
